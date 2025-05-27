@@ -145,4 +145,35 @@ button:active {
   40% { content: '..'; }
   60% { content: '...'; }
   80%, 100% { content: ''; }
+}
+
+.transcript-box {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: white;
+  white-space: pre-wrap;
+}
+
+.transcript-box::-webkit-scrollbar {
+  width: 8px;
+}
+
+.transcript-box::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.transcript-box::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.transcript-box::-webkit-scrollbar-thumb:hover {
+  background: #555;
 } 

@@ -1,10 +1,30 @@
 // Background script to handle transcript fetching
 console.log('Background script loaded');
 
+// Function to list available models
+async function listAvailableModels(apiKey) {
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${apiKey}`);
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'Failed to list models');
+    }
+    
+    console.log('Available models:', data);
+    return data;
+  } catch (error) {
+    console.error('Error listing models:', error);
+    throw error;
+  }
+}
+
 // Function to fetch transcript from YouTube
 async function fetchTranscript(videoId) {
   try {
     console.log('Fetching transcript for video:', videoId);
+    
+    // Fetch the video page
     const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
     const html = await response.text();
     
@@ -64,6 +84,65 @@ function formatTranscript(transcriptData) {
   }
 }
 
+// Function to get video summary using Gemini
+async function getVideoSummary(transcript, apiKey) {
+  try {
+    // First, list available models
+    const models = await listAvailableModels(apiKey);
+    console.log('Available models:', models);
+
+    const prompt = `Please provide a concise summary of the following video transcript:
+
+${transcript}
+
+Please include:
+1. Main topic
+2. Key points
+3. Conclusion or main takeaways
+
+Keep the summary clear and well-structured.`;
+
+    // Use the first available model that supports generateContent
+    const model = models.models.find(m => m.supportedGenerationMethods?.includes('generateContent'));
+    if (!model) {
+      throw new Error('No suitable model found for content generation');
+    }
+
+    console.log('Using model:', model.name);
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/${model.name}:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: [{
+          role: "user",
+          parts: [{
+            text: prompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        }
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'Failed to generate summary');
+    }
+
+    return data.candidates[0]?.content?.parts[0]?.text || 'Could not generate summary';
+  } catch (error) {
+    console.error('Error generating summary:', error);
+    throw error;
+  }
+}
+
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Background script received message:', request);
@@ -72,6 +151,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     fetchTranscript(request.videoId)
       .then(transcript => {
         sendResponse({ transcript });
+      })
+      .catch(error => {
+        sendResponse({ error: error.message });
+      });
+    return true; // Keep the message channel open for async response
+  }
+  
+  if (request.action === 'getSummary') {
+    getVideoSummary(request.transcript, request.apiKey)
+      .then(summary => {
+        sendResponse({ summary });
       })
       .catch(error => {
         sendResponse({ error: error.message });
