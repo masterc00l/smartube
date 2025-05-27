@@ -3,7 +3,7 @@ console.log('SmartTube extension loaded');
 console.log('Content script loaded');
 
 // Function to get video information from the current page
-function getVideoInfo() {
+async function getVideoInfo() {
   console.log('getVideoInfo called');
   try {
     // Get video ID from URL
@@ -30,10 +30,20 @@ function getVideoInfo() {
       return { error: 'Could not find video title' };
     }
 
+    // Get transcript from background script
+    console.log('Requesting transcript from background script');
+    const transcriptResponse = await new Promise((resolve) => {
+      chrome.runtime.sendMessage({ action: 'getTranscript', videoId }, resolve);
+    });
+
+    console.log('Transcript response:', transcriptResponse);
+    const transcript = transcriptResponse?.transcript || 'No transcript available';
+
     return {
       videoId,
       videoTitle,
-      videoDescription: videoDescription || 'No description available'
+      videoDescription: videoDescription || 'No description available',
+      transcript
     };
   } catch (error) {
     console.error('Error in getVideoInfo:', error);
@@ -70,10 +80,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
   if (request.action === 'getVideoInfo') {
     console.log('getVideoInfo request received');
-    const videoInfo = getVideoInfo();
-    console.log('Sending video info:', videoInfo);
-    sendResponse(videoInfo);
-    return true;
+    // Use async/await with Promise to handle the async getVideoInfo
+    getVideoInfo().then(videoInfo => {
+      console.log('Sending video info:', videoInfo);
+      sendResponse(videoInfo);
+    });
+    return true; // Keep the message channel open for async response
   } else if (request.action === 'getSearchResults') {
     sendResponse(getSearchResults());
   }

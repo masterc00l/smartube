@@ -217,9 +217,12 @@ document.addEventListener('DOMContentLoaded', function() {
 Title: ${videoInfo.videoTitle}
 Description: ${videoInfo.videoDescription}
 
+Transcript:
+${videoInfo.transcript}
+
 Question: ${question}
 
-Please provide a detailed and helpful response based on the video information provided.`;
+Please provide a detailed and helpful response based on the video information and transcript provided. If the transcript is not available, focus on the title and description.`;
 
       console.log('Sending prompt to Gemini:', prompt);
 
