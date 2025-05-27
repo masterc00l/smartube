@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SmartTube - YouTube Video Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="container">
+      <h2>SmartTube Assistant</h2>
+      
+      <div id="apiKeySection" class="section">
+        <div class="section-title">API Key Setup</div>
+        <input type="password" id="apiKey" placeholder="Enter your Gemini API key">
+        <button id="saveApiKey">Save API Key</button>
+        <div class="instructions">
+          Get your API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>
+        </div>
+      </div>
+
+      <div id="mainSection" class="hidden">
+        <div class="section">
+          <div class="section-title">Search YouTube</div>
+          <input type="text" id="searchQuery" placeholder="Enter your search query">
+          <button id="searchButton">Search</button>
+          <div class="instructions">
+            This will open YouTube search in a new tab. Once you find a video, come back here to ask questions about it.
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Ask About Video</div>
+          <textarea id="question" rows="3" placeholder="Type your question here..."></textarea>
+          <div class="suggestions">
+            <button class="suggestion-button" data-question="Summarize this video">Summarize</button>
+            <button class="suggestion-button" data-question="What are the main points?">Main Points</button>
+            <button class="suggestion-button" data-question="What is the conclusion?">Conclusion</button>
+          </div>
+          <button id="askQuestion">Ask Question</button>
+          <div class="loading" id="loading">Thinking</div>
+          <div class="error-message" id="errorMessage"></div>
+          <div id="response"></div>
+        </div>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

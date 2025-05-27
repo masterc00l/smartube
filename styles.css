@@ -1,0 +1,148 @@
+body {
+  width: 400px;
+  padding: 20px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  background-color: #f9f9f9;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  margin: 0 0 20px 0;
+  color: #1a73e8;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.section {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.section-title {
+  font-weight: 600;
+  color: #202124;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+button {
+  background-color: #1a73e8;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #1557b0;
+}
+
+button:active {
+  background-color: #174ea6;
+}
+
+#response {
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  min-height: 100px;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: white;
+}
+
+.hidden {
+  display: none;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.suggestion-button {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  border: 1px solid #dadce0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.suggestion-button:hover {
+  background-color: #d2e3fc;
+  border-color: #1a73e8;
+}
+
+.instructions {
+  font-size: 13px;
+  color: #5f6368;
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.error-message {
+  color: #d93025;
+  font-size: 13px;
+  margin: 5px 0;
+  display: none;
+}
+
+.loading {
+  display: none;
+  text-align: center;
+  color: #5f6368;
+  margin: 10px 0;
+}
+
+.loading::after {
+  content: '...';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60% { content: '...'; }
+  80%, 100% { content: ''; }
+} 
