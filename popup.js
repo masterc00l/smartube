@@ -203,6 +203,43 @@ document.addEventListener('DOMContentLoaded', function() {
         throw new Error('Could not get video information. Please make sure you are on a YouTube video page.');
       }
 
+      // Display transcript
+      const transcriptDiv = document.getElementById('transcript');
+      if (videoInfo.transcript && videoInfo.transcript !== 'No transcript available') {
+        transcriptDiv.textContent = videoInfo.transcript;
+        
+        // Get API key for summary
+        const result = await chrome.storage.sync.get(['geminiApiKey']);
+        const apiKey = result.geminiApiKey;
+        
+        if (apiKey) {
+          // Show loading state
+          showLoading();
+          
+          // Get summary from background script
+          const summaryResponse = await new Promise((resolve) => {
+            chrome.runtime.sendMessage(
+              { 
+                action: 'getSummary',
+                transcript: videoInfo.transcript,
+                apiKey: apiKey
+              },
+              resolve
+            );
+          });
+          
+          if (summaryResponse.error) {
+            throw new Error(summaryResponse.error);
+          }
+          
+          // Display summary in response div
+          responseDiv.textContent = summaryResponse.summary;
+          hideLoading();
+        }
+      } else {
+        transcriptDiv.textContent = 'No transcript available for this video.';
+      }
+
       // Get API key
       const result = await chrome.storage.sync.get(['geminiApiKey']);
       const apiKey = result.geminiApiKey;
@@ -227,7 +264,7 @@ Please provide a detailed and helpful response based on the video information an
       console.log('Sending prompt to Gemini:', prompt);
 
       // Call Gemini API
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+      const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
       console.log('Calling Gemini API:', apiUrl);
       
       const response = await fetch(apiUrl, {
